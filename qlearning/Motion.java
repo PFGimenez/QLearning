@@ -15,11 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-
-
+package qlearning;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import maze.Labyrinthe;
+import maze.SquareType;
 
 /**
  * Gestion des mouvements, met à jour la matrice de coût
@@ -28,28 +29,14 @@ import java.util.Random;
  */
 
 public class Motion {
-
-	private class StateReward
-	{
-		public final State s;
-		public final double r;
-		
-		public StateReward(State s, double r)
-		{
-			this.s = s;
-			this.r = r;
-		}
-	}
 	
 	private State[][] etats;
 	private Labyrinthe l;
 	
 	private double coutDeplacement;
 	private CostMatrix matrix;
-	private double epsilon;
-	private Random r = new Random();
 	
-	public Motion(int tailleX, int tailleY, double coutDeplacement, double epsilon, Labyrinthe l)
+	public Motion(int tailleX, int tailleY, double coutDeplacement, Labyrinthe l)
 	{
 		this.coutDeplacement = coutDeplacement;
 		matrix = new CostMatrix(tailleX, tailleY);
@@ -63,18 +50,6 @@ public class Motion {
 	public boolean isPossible(State etat, Action action)
 	{
 		return l.isTraversable(etat.x+action.dx, etat.y+action.dy);
-	}
-	
-	public Action drawAction(State s)
-	{
-		Action bestAction = matrix.getBestAction(s), drawn;
-		if(r.nextDouble() > epsilon)
-			return bestAction;
-
-		do {
-			drawn = Action.values()[r.nextInt(Action.values().length)];
-		} while(drawn != bestAction);
-		return drawn;
 	}
 	
 	public Action getBestAction(State s)

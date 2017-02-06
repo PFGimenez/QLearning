@@ -13,39 +13,32 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
-
-
 */
 
-import java.io.IOException;
+package qlearning.strategy;
 
-import maze.Labyrinthe;
+import java.util.List;
+import java.util.Random;
+
+import qlearning.Action;
 import qlearning.Motion;
-
-
+import qlearning.State;
 
 /**
- * La gestion de l'application
+ * Stratégie d'exploration pure : choix au hasard de l'action à prendre.
  * @author pf
  *
  */
 
-public class QLearning
+public class FullExploration implements Strategy
 {
+	private Random r = new Random();
 	
-	public static void main(String[] args)
+	@Override
+	public Action chooseAction(Motion motion, State current, int nbTours)
 	{
-//		Labyrinthe l = new Labyrinthe(10,10, 1, 1, 2);
-		Labyrinthe l;
-		try {
-			l = new Labyrinthe("maze1.txt");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		Motion m = new Motion(4,4,-1,l);
-		
-		System.out.println(m);
+		List<Action> actions = motion.getPossibleActions(current);
+		return actions.get(r.nextInt(actions.size()));
 	}
-	
+
 }

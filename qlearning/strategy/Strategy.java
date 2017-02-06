@@ -15,21 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+package qlearning.strategy;
 
+import qlearning.Action;
+import qlearning.Motion;
+import qlearning.State;
 
 /**
- * Les états du processus markovien. En l'occurence, les positions dans le labyrinthe.
+ * Interface des stratégies
  * @author pf
  *
  */
 
-public class State
+public interface Strategy
 {
-	public final int x, y;
-
-	public State(int x, int y)
-	{
-		this.x = x;
-		this.y = y;
-	}
+	/**
+	 * Choisit une action pour un état donné
+	 * @param motion
+	 * @param current
+	 * @return
+	 */
+	public Action chooseAction(Motion motion, State current, int nbTours);
 }

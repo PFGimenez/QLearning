@@ -15,27 +15,47 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-
+package maze;
 
 /**
- * Une action. On peut se déplacer dans quatre directions.
+ * Le type d'une case dans le labyrinthe
  * @author pf
  *
  */
 
-public enum Action {
-
-	HAUT(0,1),
-	BAS(0,-1),
-	GAUCHE(-1,0),
-	DROITE(1,0);
+public enum SquareType {
+	ENTRY('<', -1),
+	EMPTY('.', -1),
+	WALL('#', -5),
+	EXIT('>', 100),
+	TRAP('^', -10);
 	
-	public final int dx, dy;
+	/**
+	 * Le symbole associé à ce type dans un fichier texte
+	 */
+	public final char symbol;
 	
-	private Action(int dx, int dy)
+	/**
+	 * La récompense du Q-learning en passant par ce point
+	 */
+	public final int recompense;
+	
+	private SquareType(char symbol, int recompense)
 	{
-		this.dx = dx;
-		this.dy = dy;
+		this.symbol = symbol;
+		this.recompense = recompense;
 	}
 	
+	/**
+	 * Renvoie le type associé à un symbole
+	 * @param symbol
+	 * @return
+	 */
+	public static SquareType read(char symbol)
+	{
+		for(SquareType t : SquareType.values())
+			if(t.symbol == symbol)
+				return t;
+		return null;
+	}
 }

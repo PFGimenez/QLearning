@@ -13,39 +13,23 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
-
-
 */
 
-import java.io.IOException;
-
-import maze.Labyrinthe;
-import qlearning.Motion;
-
-
+package qlearning;
 
 /**
- * La gestion de l'application
+ * Les états du processus markovien. En l'occurence, les positions dans le labyrinthe.
  * @author pf
  *
  */
 
-public class QLearning
+public class State
 {
-	
-	public static void main(String[] args)
+	public final int x, y;
+
+	public State(int x, int y)
 	{
-//		Labyrinthe l = new Labyrinthe(10,10, 1, 1, 2);
-		Labyrinthe l;
-		try {
-			l = new Labyrinthe("maze1.txt");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		Motion m = new Motion(4,4,-1,l);
-		
-		System.out.println(m);
+		this.x = x;
+		this.y = y;
 	}
-	
 }

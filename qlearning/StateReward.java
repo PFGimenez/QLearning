@@ -15,39 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+package qlearning;
+
 /**
- * Le type d'une case dans le labyrinthe
+ * Structure composée d'un état et d'une récompense
  * @author pf
  *
  */
 
-public enum SquareType {
-	ENTRY('<'),
-	EMPTY('.'),
-	WALL('#'),
-	EXIT('>'),
-	TRAP('^');
+public class StateReward
+{
+	public final State s;
+	public final double r;
 	
-	/**
-	 * Le symbole associé à ce type dans un fichier texte
-	 */
-	public final char symbol;
-	
-	private SquareType(char symbol)
+	public StateReward(State s, double r)
 	{
-		this.symbol = symbol;
-	}
-	
-	/**
-	 * Renvoie le type associé à un symbole
-	 * @param symbol
-	 * @return
-	 */
-	public static SquareType read(char symbol)
-	{
-		for(SquareType t : SquareType.values())
-			if(t.symbol == symbol)
-				return t;
-		return null;
+		this.s = s;
+		this.r = r;
 	}
 }
