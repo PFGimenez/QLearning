@@ -30,20 +30,23 @@ import qlearning.State;
  *
  */
 
-public class EpsilonStrategy implements Strategy
+public class EpsilonStrategy extends Strategy
 {
 	private double epsilon;
 	private Random r = new Random();
-	private FullExploitation exploit = new FullExploitation();
-	private FullExploration explore = new FullExploration();
+	private Strategy exploit;
+	private Strategy explore;
 	
-	public EpsilonStrategy(double epsilon)
+	public EpsilonStrategy(double epsilon, Motion motion, Strategy explore)
 	{
+		super(motion);
+		exploit = new FullExploitation(motion);
+		this.explore = explore;
 		this.epsilon = epsilon;
 	}
 	
 	@Override
-	public Action chooseAction(Motion motion, State current, int nbTours)
+	protected Action chooseAction(Motion motion, State current, int nbTours)
 	{
 		double tmpEpsilon = Math.pow(epsilon, nbTours);
 		if(r.nextDouble() > tmpEpsilon)

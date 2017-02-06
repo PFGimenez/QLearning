@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import maze.Labyrinthe;
 import qlearning.Motion;
+import qlearning.strategy.*;
 
 
 
@@ -30,7 +31,7 @@ import qlearning.Motion;
  *
  */
 
-public class QLearning
+public class ConsoleDisplay
 {
 	
 	public static void main(String[] args)
@@ -43,8 +44,13 @@ public class QLearning
 			e.printStackTrace();
 			return;
 		}
-		Motion m = new Motion(4,4,-1,l);
-		
+		Motion m = new Motion(l, false, true);
+		System.out.println(m);
+//		Strategy strat = new EpsilonStrategy(0.90, m, new SmartFullExploration(m));
+//		Strategy strat = new FullExploration(m);
+//		Strategy strat = new SmartFullExploration(m);
+		Strategy strat = new FullExploitation(m);
+		System.out.println(strat.learn(2000));
 		System.out.println(m);
 	}
 	

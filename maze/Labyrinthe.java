@@ -19,7 +19,11 @@ package maze;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import qlearning.State;
 
 /**
  * Labyrinthe, qui s'occupe de sa génération et des obstacles
@@ -32,6 +36,9 @@ public class Labyrinthe {
 	private int tailleX, tailleY;
 	private SquareType[][] cases;
 	private Random r = new Random();
+	private List<State> listEntry = new ArrayList<State>();
+	private List<State> listExit = new ArrayList<State>();
+	private List<State> listTrap = new ArrayList<State>();
 
 	/**
 	 * Constructeur d'un labyrinthe aléatoire
@@ -45,17 +52,18 @@ public class Labyrinthe {
 	{
 		this.tailleX = tailleX;
 		this.tailleY = tailleY;
+	    State.setTailles(tailleX, tailleY);
 		cases = new SquareType[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
 				cases[i][j] = (r.nextDouble() > 0.20) ? SquareType.EMPTY : SquareType.WALL; // 20% de murs
 		
-		addType(nbEntry, SquareType.ENTRY);
-		addType(nbExit, SquareType.EXIT);
-		addType(nbTrap, SquareType.TRAP);
+		addType(nbEntry, SquareType.ENTRY, listEntry);
+		addType(nbExit, SquareType.EXIT, listExit);
+		addType(nbTrap, SquareType.TRAP, listTrap);
 	}
 	
-	private void addType(int nb, SquareType type)
+	private void addType(int nb, SquareType type, List<State> list)
 	{
 		for(int i = 0; i < nb; i++)
 		{
@@ -65,6 +73,7 @@ public class Labyrinthe {
 				y = r.nextInt(tailleY);
 			} while(cases[x][y] != SquareType.EMPTY);
 			cases[x][y] = type;
+			list.add(new State(x, y));
 		}
 	}
 	
@@ -80,26 +89,23 @@ public class Labyrinthe {
 	    String line;
 	    tailleX = Integer.parseInt(br.readLine());
 	    tailleY = Integer.parseInt(br.readLine());
+	    State.setTailles(tailleX, tailleY);
 		cases = new SquareType[tailleX][tailleY];
 		for(int i = tailleY-1; i >= 0; i--)
 		{
 	        line = br.readLine();
 			for(int j = 0; j < tailleX; j++)
+			{
 				cases[j][i] = SquareType.read(line.charAt(j));
+				if(cases[j][i] == SquareType.ENTRY)
+					listEntry.add(new State(j,i));
+				else if(cases[j][i] == SquareType.EXIT)
+					listExit.add(new State(j,i));
+				else if(cases[j][i] == SquareType.TRAP)
+					listTrap.add(new State(j,i));
+			}
 		}
 	    br.close();
-	}
-	
-	/**
-	 * Renvoie "vrai" ssi cette case est dans les limites du labyrinthe.
-	 * Les murs sont "traversables" a priori : c'est à l'IA de comprendre qu'il ne faut pas foncer dedans.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public boolean isTraversable(int x, int y)
-	{
-		return x >= 0 && x < tailleX && y >= 0 && y < tailleY;
 	}
 	
 	/**
@@ -121,9 +127,34 @@ public class Labyrinthe {
 		return out;
 	}
 
+	/**
+	 * Renvoie le type d'une case
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public SquareType getType(int x, int y)
 	{
 		return cases[x][y];
 	}
-	
+
+	/**
+	 * Renvoie une sortie aléatoire
+	 * @return
+	 */
+	public State getRandomEntry()
+	{
+		return listEntry.get(r.nextInt(listEntry.size()));
+	}
+
+	public int getTailleX()
+	{
+		return tailleX;
+	}
+
+	public int getTailleY()
+	{
+		return tailleY;
+	}
+
 }

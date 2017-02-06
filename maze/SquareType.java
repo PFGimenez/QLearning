@@ -27,7 +27,7 @@ public enum SquareType {
 	ENTRY('<', -1),
 	EMPTY('.', -1),
 	WALL('#', -5),
-	EXIT('>', 100),
+	EXIT('>', 1000),
 	TRAP('^', -10);
 	
 	/**
@@ -38,9 +38,9 @@ public enum SquareType {
 	/**
 	 * La récompense du Q-learning en passant par ce point
 	 */
-	public final int recompense;
+	public final double recompense;
 	
-	private SquareType(char symbol, int recompense)
+	private SquareType(char symbol, double recompense)
 	{
 		this.symbol = symbol;
 		this.recompense = recompense;

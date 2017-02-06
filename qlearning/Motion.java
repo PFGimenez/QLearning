@@ -16,7 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
 package qlearning;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import maze.Labyrinthe;
@@ -28,28 +31,31 @@ import maze.SquareType;
  *
  */
 
-public class Motion {
-	
+public class Motion
+{	
 	private State[][] etats;
 	private Labyrinthe l;
-	
-	private double coutDeplacement;
+	private int tailleX, tailleY;
 	private CostMatrix matrix;
+	private boolean backtracking;
+	private LinkedList<State> statePath = new LinkedList<State>();
+	private LinkedList<Action> actionPath = new LinkedList<Action>();
+	private LinkedList<Double> rewardPath = new LinkedList<Double>();
+	private State depart;
+	private boolean verbose;
 	
-	public Motion(int tailleX, int tailleY, double coutDeplacement, Labyrinthe l)
+	public Motion(Labyrinthe l, boolean backtracking, boolean verbose)
 	{
-		this.coutDeplacement = coutDeplacement;
+		this.verbose = verbose;
+		this.backtracking = backtracking;
+		tailleX = l.getTailleX();
+		tailleY = l.getTailleY();
 		matrix = new CostMatrix(tailleX, tailleY);
 		etats = new State[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
 				etats[i][j] = new State(i,j);
 		this.l = l;
-	}
-	
-	public boolean isPossible(State etat, Action action)
-	{
-		return l.isTraversable(etat.x+action.dx, etat.y+action.dy);
 	}
 	
 	public Action getBestAction(State s)
@@ -66,7 +72,7 @@ public class Motion {
 	{
 		List<Action> out =  new ArrayList<Action>();
 		for(Action a : Action.values())
-			if(l.isTraversable(s.x+a.dx, s.y+a.dy))
+			if(new State(s.x+a.dx, s.y+a.dy).isPossible())
 				out.add(a);
 		return out;
 	}
@@ -80,10 +86,11 @@ public class Motion {
 	 */
 	public StateReward getNextStateReward(State etat, Action action)
 	{
+
 		/*
 		 * Action impossible (bord du terrain)
 		 */
-		if(!l.isTraversable(etat.x+action.dx, etat.y+action.dy))
+		if(!new State(etat.x+action.dx, etat.y+action.dy).isPossible())
 			return null;
 		
 		/*
@@ -92,26 +99,98 @@ public class Motion {
 		State voisin = etats[etat.x+action.dx][etat.y+action.dy];
 		State nextState = voisin; // a priori, le déplacement se fait normalement
 		
-		double cout = 0;
-		if(l.getType(voisin.x, voisin.y) == SquareType.EXIT)
-			cout = 100;
-		else if(l.getType(voisin.x, voisin.y) == SquareType.TRAP)
-			cout = -10;
-		else if(l.getType(voisin.x, voisin.y) == SquareType.WALL)
+		double cout;
+
+		/*
+		 * Si on avance dans un mur, on ne bouge pas
+		 */
+		if(l.getType(voisin.x, voisin.y) == SquareType.WALL)
 		{
-			cout = -5;
-			/*
-			 * Si on avance dans un mur, on ne bouge pas
-			 */
+			cout = SquareType.WALL.recompense;
 			nextState = etat;
 		}
+		else
+			cout = l.getType(nextState.x, nextState.y).recompense;
 		
-		return new StateReward(nextState, coutDeplacement + cout);
+		statePath.addFirst(nextState);
+		actionPath.addFirst(action);
+		rewardPath.addFirst(cout);
+
+		if(verbose)
+			System.out.println("Passage de "+etat+" à "+nextState+"("+l.getType(nextState.x, nextState.y)+")"+" par "+action+". Récompense = "+cout);
+
+		return new StateReward(nextState, cout);
 	}
 	
+	/**
+	 * Permet d'afficher la stratégie d'exploitation
+	 */
 	public String toString()
 	{
-		return l.toString();
+		NumberFormat formatter = new DecimalFormat("#0.00");
+		String out = l.toString()+"\n";
+		for(int i = tailleY-1; i >= 0; i--)
+		{
+			for(int j = 0; j < tailleX; j++)
+			{
+				Action a = getBestAction(new State(j,i));
+				double r = matrix.getCost(new State(j,i), a);
+				out += a+" "+formatter.format(r)+"	";
+			}
+			out += "\n";
+		}
+		return out;
+	}
+
+	/**
+	 * Récupère une entrée aléatoire pour se replacer
+	 * @return
+	 */
+	public State getRandomEntry()
+	{
+		State out = l.getRandomEntry();
+		depart = out;
+		return out;
 	}
 	
+	/**
+	 * Mise à jour du coût dans la matrice
+	 * @param s
+	 * @param a
+	 * @param next
+	 * @param reward
+	 */
+	public void updateCost(State s, Action a, State next, double reward)
+	{
+		matrix.updateCost(s, a, next, reward);
+	}
+
+	/**
+	 * Est-on arrivé à une sortie du labyrinthe ?
+	 * @param state
+	 * @return
+	 */
+	public boolean isExited(State state)
+	{
+		boolean exited = l.getType(state.x, state.y) == SquareType.EXIT;
+		if(exited && backtracking)
+		{
+			matrix.doBacktrack(depart, statePath, actionPath, rewardPath);
+			statePath.clear();
+			actionPath.clear();
+			rewardPath.clear();
+		}
+		return exited;
+	}
+
+	public int getTailleX() 
+	{
+		return l.getTailleX();
+	}
+
+	public int getTailleY() 
+	{
+		return l.getTailleY();
+	}
+
 }

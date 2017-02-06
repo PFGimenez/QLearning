@@ -17,33 +17,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package qlearning.strategy;
 
-import java.util.List;
-import java.util.Random;
-
 import qlearning.Action;
 import qlearning.Motion;
 import qlearning.State;
 
 /**
- * Stratégie d'exploration pure : choix au hasard de l'action à prendre.
+ * Stratégie d'exploration pure intelligente : elle explore là où elle ne connaît pas.
  * @author pf
  *
  */
 
-public class FullExploration extends Strategy
+public class SmartFullExploration extends Strategy
 {
-	public FullExploration(Motion motion) 
+	public SmartFullExploration(Motion motion) 
 	{
 		super(motion);
 	}
 
-	private Random r = new Random();
-	
 	@Override
 	protected Action chooseAction(Motion motion, State current, int nbTours)
 	{
-		List<Action> actions = motion.getPossibleActions(current);
-		return actions.get(r.nextInt(actions.size()));
+		Action best = null;
+		int valueBest = 0;
+		for(Action a : Action.values())
+		{
+			int x = current.x + a.dx;
+			int y = current.y + a.dy;
+			if(!new State(x,y).isPossible())
+				continue;
+			
+			if(best == null || comptes[current.x][current.y][a.ordinal()] < valueBest)
+			{
+				best = a;
+				valueBest = comptes[current.x][current.y][a.ordinal()];
+			}
+		}
+		return best;
 	}
 
 }

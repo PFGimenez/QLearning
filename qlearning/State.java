@@ -25,11 +25,49 @@ package qlearning;
 
 public class State
 {
+	private static int tailleX, tailleY;
+	
+	public static void setTailles(int tailleX, int tailleY)
+	{
+		State.tailleX = tailleX;
+		State.tailleY = tailleY;
+	}
+	
 	public final int x, y;
 
 	public State(int x, int y)
 	{
 		this.x = x;
 		this.y = y;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return x*5000+y;
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		return other instanceof State && ((State)other).x == x && ((State)other).y == y;
+	}
+	
+	
+	/**
+	 * Renvoie "vrai" ssi cette case est dans les limites du labyrinthe.
+	 * Les murs sont "traversables" a priori : c'est à l'IA de comprendre qu'il ne faut pas foncer dedans.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isPossible()
+	{
+		return x >= 0 && x < tailleX && y >= 0 && y < tailleY;
+	}
+	
+	public String toString()
+	{
+		return "("+x+","+y+")";
 	}
 }

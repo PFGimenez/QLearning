@@ -1,4 +1,3 @@
-package qlearning;
 /*
 Copyright (C) 2017 Pierre-François Gimenez
 
@@ -15,6 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+
+package qlearning;
 
 /**
  * Une action. On peut se déplacer dans quatre directions.

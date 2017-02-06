@@ -20,20 +20,63 @@ package qlearning.strategy;
 import qlearning.Action;
 import qlearning.Motion;
 import qlearning.State;
+import qlearning.StateReward;
 
 /**
- * Interface des stratégies
+ * Classe mère des stratégies
  * @author pf
  *
  */
 
-public interface Strategy
+public abstract class Strategy
 {
+	private Motion motion;
+	private double cumulatedReward;
+	protected int[][][] comptes;
+	
+	public Strategy(Motion motion)
+	{
+		this.motion = motion;
+		comptes = new int[motion.getTailleX()][motion.getTailleY()][Action.values().length];
+	}
+	
+	/**
+	 * Apprend pendant nbToursMax
+	 * Renvoie la somme des récompenses obtenues
+	 * @param nbToursMax
+	 * @return
+	 */
+	public double learn(int nbToursMax)
+	{
+		cumulatedReward = 0;
+		for(int i = 0; i < comptes.length; i++)
+			for(int j = 0; j < comptes[i].length; j++)
+				for(int k = 0; k < Action.values().length; k++)
+					comptes[i][j][k] = 0;
+		
+		State current = motion.getRandomEntry();
+		for(int i = 0; i < nbToursMax; i++)
+		{
+			Action a = chooseAction(motion, current, i);
+			comptes[current.x][current.y][a.ordinal()]++;
+			StateReward sr = motion.getNextStateReward(current, a);
+			motion.updateCost(current, a, sr.s, sr.r);
+			current = sr.s;
+			cumulatedReward += sr.r;
+			if(motion.isExited(current))
+			{
+				System.out.println("Sortie atteinte !");
+				current = motion.getRandomEntry();
+			}
+		}
+		return cumulatedReward;
+	}
+	
 	/**
 	 * Choisit une action pour un état donné
 	 * @param motion
 	 * @param current
 	 * @return
 	 */
-	public Action chooseAction(Motion motion, State current, int nbTours);
+	protected abstract Action chooseAction(Motion motion, State current, int nbTours);
 }
