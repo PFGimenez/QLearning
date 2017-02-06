@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -27,25 +29,35 @@ import java.util.Random;
 
 public class Motion {
 
+	private class StateReward
+	{
+		public final State s;
+		public final double r;
+		
+		public StateReward(State s, double r)
+		{
+			this.s = s;
+			this.r = r;
+		}
+	}
+	
 	private State[][] etats;
 	private Labyrinthe l;
 	
 	private double coutDeplacement;
 	private CostMatrix matrix;
-	private State exit;
-
-	public Motion(int tailleX, int tailleY, double coutDeplacement)
+	private double epsilon;
+	private Random r = new Random();
+	
+	public Motion(int tailleX, int tailleY, double coutDeplacement, double epsilon, Labyrinthe l)
 	{
 		this.coutDeplacement = coutDeplacement;
 		matrix = new CostMatrix(tailleX, tailleY);
-		Random r = new Random();
+		etats = new State[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
 				etats[i][j] = new State(i,j);
-		l = new Labyrinthe(tailleX, tailleY);
-		do {
-			exit = etats[r.nextInt()%tailleX][r.nextInt()%tailleY];
-		} while(!l.isTraversable(exit.x, exit.y));
+		this.l = l;
 	}
 	
 	public boolean isPossible(State etat, Action action)
@@ -53,20 +65,78 @@ public class Motion {
 		return l.isTraversable(etat.x+action.dx, etat.y+action.dy);
 	}
 	
-	public double getCost(State etat, Action action)
+	public Action drawAction(State s)
 	{
-		return coutDeplacement;
+		Action bestAction = matrix.getBestAction(s), drawn;
+		if(r.nextDouble() > epsilon)
+			return bestAction;
+
+		do {
+			drawn = Action.values()[r.nextInt(Action.values().length)];
+		} while(drawn != bestAction);
+		return drawn;
+	}
+	
+	public Action getBestAction(State s)
+	{
+		return matrix.getBestAction(s);
 	}
 	
 	/**
-	 * On suppose que le trajet est possible
+	 * Renvoie la liste des actions possibles à partir de cet état
+	 * @param s
+	 * @return
+	 */
+	public List<Action> getPossibleActions(State s)
+	{
+		List<Action> out =  new ArrayList<Action>();
+		for(Action a : Action.values())
+			if(l.isTraversable(s.x+a.dx, s.y+a.dy))
+				out.add(a);
+		return out;
+	}
+	
+	/**
+	 * Renvoie le couple état/récompense qui résulte de cette action à partir de cet état
+	 * Si le mouvement est interdit, renvoie null.
 	 * @param etat
 	 * @param action
 	 * @return
 	 */
-	public State getNextState(State etat, Action action)
+	public StateReward getNextStateReward(State etat, Action action)
 	{
-		return etats[etat.x+action.dx][etat.y+action.dy];
+		/*
+		 * Action impossible (bord du terrain)
+		 */
+		if(!l.isTraversable(etat.x+action.dx, etat.y+action.dy))
+			return null;
+		
+		/*
+		 * L'état dans lequel on sera si tout se passe bien
+		 */
+		State voisin = etats[etat.x+action.dx][etat.y+action.dy];
+		State nextState = voisin; // a priori, le déplacement se fait normalement
+		
+		double cout = 0;
+		if(l.getType(voisin.x, voisin.y) == SquareType.EXIT)
+			cout = 100;
+		else if(l.getType(voisin.x, voisin.y) == SquareType.TRAP)
+			cout = -10;
+		else if(l.getType(voisin.x, voisin.y) == SquareType.WALL)
+		{
+			cout = -5;
+			/*
+			 * Si on avance dans un mur, on ne bouge pas
+			 */
+			nextState = etat;
+		}
+		
+		return new StateReward(nextState, coutDeplacement + cout);
+	}
+	
+	public String toString()
+	{
+		return l.toString();
 	}
 	
 }

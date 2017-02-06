@@ -16,20 +16,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
 /**
- * La gestion de l'application
+ * Le type d'une case dans le labyrinthe
  * @author pf
  *
  */
 
-public class QLearning
-{
+public enum SquareType {
+	ENTRY('<'),
+	EMPTY('.'),
+	WALL('#'),
+	EXIT('>'),
+	TRAP('^');
 	
-	public static void main(String[] args)
+	/**
+	 * Le symbole associé à ce type dans un fichier texte
+	 */
+	public final char symbol;
+	
+	private SquareType(char symbol)
 	{
-		Labyrinthe l = new Labyrinthe(10,10, 1, 1, 2);
-		Motion m = new Motion(4,4,1,-1,l);
-		
-		System.out.println(m);
+		this.symbol = symbol;
 	}
 	
+	/**
+	 * Renvoie le type associé à un symbole
+	 * @param symbol
+	 * @return
+	 */
+	public static SquareType read(char symbol)
+	{
+		for(SquareType t : SquareType.values())
+			if(t.symbol == symbol)
+				return t;
+		return null;
+	}
 }
