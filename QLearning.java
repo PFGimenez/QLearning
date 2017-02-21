@@ -17,14 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 */
 
-import java.io.IOException;
-
 import graphic.ThreadGUI;
 import maze.Labyrinthe;
 import qlearning.Motion;
 import qlearning.strategy.*;
-
-
 
 /**
  * La gestion de l'application
@@ -37,25 +33,24 @@ public class QLearning
 	
 	public static void main(String[] args)
 	{
-//		Labyrinthe l = new Labyrinthe(10,10, 1, 1, 2);
 		Labyrinthe l;
 		try {
-//			l = new Labyrinthe("maze3.txt");
-			l = new Labyrinthe(30, 20, 15, 5, 40, 20);
+			l = new Labyrinthe("maze1.txt");
+//			l = new Labyrinthe(10, 10, 3, 1, 10, 0);
 			System.out.println("Labyrinthe : \n"+l);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
 		}
+		
 		Motion m = new Motion(l, 0.95, true, false);
-		System.out.println(m);
-		Strategy strat = new EpsilonStrategy(0.99, m, new SmartFullExploration(m));
+		Strategy strat = new EpsilonStrategy(0.99, m, new SmartFullExploration(m), true);
 //		Strategy strat = new FullExploration(m);
 //		Strategy strat = new SmartFullExploration(m);
 //		Strategy strat = new FullExploitation(m);
-		ThreadGUI display = new ThreadGUI(l, m, strat);
+		ThreadGUI display = new ThreadGUI(l, m, strat, 32, true);
 		display.start();
-		System.out.println(strat.learn(200000, 5));
+		System.out.println("Score cumulé : "+strat.learn(200000, 100));
 		System.out.println(m);
 	}
 	

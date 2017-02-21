@@ -32,13 +32,14 @@ public abstract class Strategy
 {
 	private Motion motion;
 	private double cumulatedReward;
-	protected int[][][] comptes;
+	protected static int[][][] comptes = null; // si on combine plusieurs stratége, il faut quand même une seule matrice de comptes
 	private State current = null;
 	
 	public Strategy(Motion motion)
 	{
 		this.motion = motion;
-		comptes = new int[motion.getTailleX()][motion.getTailleY()][Action.values().length];
+		if(comptes == null)
+			comptes = new int[motion.getTailleX()][motion.getTailleY()][Action.values().length];
 	}
 	
 	public State getCurrent()
@@ -54,6 +55,7 @@ public abstract class Strategy
 	 */
 	public double learn(int nbToursMax, int sleep)
 	{
+		long lastAff = System.currentTimeMillis();
 		cumulatedReward = 0;
 		for(int i = 0; i < comptes.length; i++)
 			for(int j = 0; j < comptes[i].length; j++)
@@ -63,7 +65,11 @@ public abstract class Strategy
 		current = motion.getRandomEntry();
 		for(int i = 0; i < nbToursMax; i++)
 		{
-			System.out.println(i);
+			if(System.currentTimeMillis() - lastAff > 5000)
+			{
+				lastAff = System.currentTimeMillis();
+				System.out.println(i+" itérations");
+			}
 			synchronized(this)
 			{
 				Action a = chooseAction(motion, current, i);
@@ -73,10 +79,7 @@ public abstract class Strategy
 				current = sr.s;
 				cumulatedReward += sr.r;
 				if(motion.isExited(current))
-				{
-	//				System.out.println("Sortie atteinte !");
 					current = motion.getRandomEntry();
-				}
 				notify();
 			}
 			if(sleep > 0)

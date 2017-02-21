@@ -63,6 +63,11 @@ public class Motion
 		return matrix.getBestAction(s);
 	}
 	
+	public boolean hasBeenVisited(State s)
+	{
+		return matrix.hasBeenVisited(s);
+	}
+	
 	/**
 	 * Renvoie la liste des actions possibles à partir de cet état
 	 * @param s

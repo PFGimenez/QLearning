@@ -73,9 +73,9 @@ public class GUIDisplay extends JPanel {
 				else if(type == SquareType.TELEPORT)
 					g.drawImage(spriteTeleport, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
 				Action a = m.getBestAction(new State(i,j));
-				if(type != SquareType.WALL && type != SquareType.EXIT && drawArrow)
+				if(m.hasBeenVisited(new State(i,j)) && drawArrow)
 					g.drawImage(spritesArrow[a.ordinal()], i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
-				if(current.x == i && current.y == j)
+				if(current != null && current.x == i && current.y == j)
 					g.drawImage(spritePerso, i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
 			}
 	}

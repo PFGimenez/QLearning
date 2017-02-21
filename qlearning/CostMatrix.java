@@ -27,6 +27,7 @@ import java.util.List;
 public class CostMatrix
 {
 	private double[][][] cost;
+	private boolean[][] visited;
 	private double learningRate = 0.2;
 	private double actualisationFactor;
 	
@@ -38,6 +39,7 @@ public class CostMatrix
 			for(int j = 0; j < tailleY; j++)
 				for(int k = 0; k < Action.values().length; k++)
 					cost[i][j][k] = 0;
+		visited = new boolean[tailleX][tailleY];
 	}
 	
 	public double getCost(State s, Action a)
@@ -68,6 +70,7 @@ public class CostMatrix
 	 */
 	public void updateCost(State s, Action a, State next, double reward)
 	{
+		visited[s.x][s.y] = true;
 		cost[s.x][s.y][a.ordinal()] = cost[s.x][s.y][a.ordinal()] + learningRate * (reward + actualisationFactor * cost[next.x][next.y][getBestAction(next).ordinal()] - cost[s.x][s.y][a.ordinal()]);
 	}
 	
@@ -88,5 +91,10 @@ public class CostMatrix
 				bestAction = a;
 			}
 		return bestAction;
+	}
+	
+	public boolean hasBeenVisited(State s)
+	{
+		return visited[s.x][s.y];
 	}
 }

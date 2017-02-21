@@ -33,13 +33,15 @@ import qlearning.State;
 public class EpsilonStrategy extends Strategy
 {
 	private double epsilon;
+	private boolean verbose;
 	private Random r = new Random();
 	private Strategy exploit;
 	private Strategy explore;
 	
-	public EpsilonStrategy(double epsilon, Motion motion, Strategy explore)
+	public EpsilonStrategy(double epsilon, Motion motion, Strategy explore, boolean verbose)
 	{
 		super(motion);
+		this.verbose = verbose;
 		exploit = new FullExploitation(motion);
 		this.explore = explore;
 		this.epsilon = epsilon;
@@ -49,9 +51,17 @@ public class EpsilonStrategy extends Strategy
 	protected Action chooseAction(Motion motion, State current, int nbTours)
 	{
 		double tmpEpsilon = Math.pow(epsilon, nbTours);
+		if(verbose)
+			System.out.println("epsilon : "+tmpEpsilon);
 		if(r.nextDouble() > tmpEpsilon)
+		{
+			if(verbose)
+				System.out.println("Exploite");
 			return exploit.chooseAction(motion, current, nbTours);
+		}
 		
+		if(verbose)
+			System.out.println("Explore");
 		return explore.chooseAction(motion, current, nbTours);
 	}
 

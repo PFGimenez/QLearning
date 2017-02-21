@@ -32,10 +32,10 @@ public class ThreadGUI extends Thread
 	private Strategy strat;
 	private GUIDisplay display;
 	
-	public ThreadGUI(Labyrinthe l, Motion m, Strategy strat)
+	public ThreadGUI(Labyrinthe l, Motion m, Strategy strat, int tailleSprite, boolean drawArrow)
 	{
 		this.strat = strat;
-		display = new GUIDisplay(l, m, 32, true);
+		display = new GUIDisplay(l, m, tailleSprite, drawArrow);
 	}
 	
 	@Override
@@ -49,6 +49,7 @@ public class ThreadGUI extends Thread
 				{
 					strat.wait();
 					display.display(strat.getCurrent());
+					Thread.sleep(5);
 				}
 			}
 		} catch (InterruptedException e) {
