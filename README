@@ -1,3 +1,5 @@
 Application de l'algorithme de Q-learning pour apprendre à sortir d'un labyrinthe.
 
 Développé dans le cadre d'un TP dont il constitue une "correction" (en tout cas une solution possible).
+
+![Screenshot](https://raw.githubusercontent.com/PFGimenez/QLearning/master/screenshot.png)
