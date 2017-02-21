@@ -35,7 +35,7 @@ public class ThreadGUI extends Thread
 	public ThreadGUI(Labyrinthe l, Motion m, Strategy strat)
 	{
 		this.strat = strat;
-		display = new GUIDisplay(l, m, 16, true);
+		display = new GUIDisplay(l, m, 32, true);
 	}
 	
 	@Override
