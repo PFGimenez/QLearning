@@ -27,7 +27,7 @@ import java.util.List;
 public class CostMatrix
 {
 	private double[][][] cost;
-	private double learningRate = 1;
+	private double learningRate = 0.2;
 	private double actualisationFactor;
 	
 	public CostMatrix(int tailleX, int tailleY, double gamma)

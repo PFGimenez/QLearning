@@ -44,12 +44,13 @@ public class GUIDisplay extends JPanel {
 
 	private Labyrinthe l;
 	private Motion m;
-	private Image spriteMur, spritePerso, spriteSol, spritePiege, spriteEntry, spriteExit;
+	private Image spriteMur, spritePerso, spriteSol, spritePiege, spriteEntry, spriteExit, spriteTeleport;
 	private Image[] spritesArrow = new Image[4];
 	private static final long serialVersionUID = 1L;
 	private State current;
 	private int taille;
-
+	private boolean drawArrow;
+	
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
@@ -59,9 +60,7 @@ public class GUIDisplay extends JPanel {
 			for(int j = 0; j < tailleY; j++)
 			{
 				SquareType type = l.getType(i, j);
-				if(current.x == i && current.y == j)
-					g.drawImage(spritePerso, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
-				else if(type == SquareType.EMPTY)
+				if(type == SquareType.EMPTY)
 					g.drawImage(spriteSol, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
 				else if(type == SquareType.ENTRY)
 					g.drawImage(spriteEntry, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
@@ -71,14 +70,19 @@ public class GUIDisplay extends JPanel {
 					g.drawImage(spritePiege, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
 				else if(type == SquareType.WALL)
 					g.drawImage(spriteMur, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
+				else if(type == SquareType.TELEPORT)
+					g.drawImage(spriteTeleport, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
 				Action a = m.getBestAction(new State(i,j));
-				if(type != SquareType.WALL)
+				if(type != SquareType.WALL && type != SquareType.EXIT && drawArrow)
 					g.drawImage(spritesArrow[a.ordinal()], i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
+				if(current.x == i && current.y == j)
+					g.drawImage(spritePerso, i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
 			}
 	}
 
-	public GUIDisplay(Labyrinthe l, Motion m, int taille)
+	public GUIDisplay(Labyrinthe l, Motion m, int taille, boolean drawArrow)
 	{
+		this.drawArrow = drawArrow;
 		this.m = m;
 		this.taille = taille;
 		this.l = l;
@@ -89,6 +93,7 @@ public class GUIDisplay extends JPanel {
 			spritePiege = ImageIO.read(new File("img"+taille+"/trap.png"));
 			spriteEntry = ImageIO.read(new File("img"+taille+"/entry.png"));
 			spriteExit = ImageIO.read(new File("img"+taille+"/exit.png"));
+			spriteTeleport = ImageIO.read(new File("img"+taille+"/portal.png"));
 			spritesArrow[0] = ImageIO.read(new File("img"+taille+"/arrow_top.png"));
 			spritesArrow[1] = ImageIO.read(new File("img"+taille+"/arrow_bottom.png"));
 			spritesArrow[2] = ImageIO.read(new File("img"+taille+"/arrow_left.png"));

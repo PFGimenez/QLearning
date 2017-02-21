@@ -39,6 +39,7 @@ public class Labyrinthe {
 	private List<State> listEntry = new ArrayList<State>();
 	private List<State> listExit = new ArrayList<State>();
 	private List<State> listTrap = new ArrayList<State>();
+	private List<State> listTeleport = new ArrayList<State>();
 
 	/**
 	 * Constructeur d'un labyrinthe aléatoire
@@ -48,7 +49,7 @@ public class Labyrinthe {
 	 * @param nbExit
 	 * @param nbTrap
 	 */
-	public Labyrinthe(int tailleX, int tailleY, int nbEntry, int nbExit, int nbTrap)
+	public Labyrinthe(int tailleX, int tailleY, int nbEntry, int nbExit, int nbTrap, int nbTeleport)
 	{
 		this.tailleX = tailleX;
 		this.tailleY = tailleY;
@@ -56,11 +57,12 @@ public class Labyrinthe {
 		cases = new SquareType[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
-				cases[i][j] = (r.nextDouble() > 0.20) ? SquareType.EMPTY : SquareType.WALL; // 20% de murs
+				cases[i][j] = (r.nextDouble() > 0.30) ? SquareType.EMPTY : SquareType.WALL; // 20% de murs
 		
 		addType(nbEntry, SquareType.ENTRY, listEntry);
 		addType(nbExit, SquareType.EXIT, listExit);
 		addType(nbTrap, SquareType.TRAP, listTrap);
+		addType(nbTeleport, SquareType.TELEPORT, listTeleport);
 	}
 	
 	private void addType(int nb, SquareType type, List<State> list)
@@ -103,6 +105,8 @@ public class Labyrinthe {
 					listExit.add(new State(j,i));
 				else if(cases[j][i] == SquareType.TRAP)
 					listTrap.add(new State(j,i));
+				else if(cases[j][i] == SquareType.TELEPORT)
+					listTeleport.add(new State(j,i));
 			}
 		}
 	    br.close();
@@ -145,6 +149,15 @@ public class Labyrinthe {
 	public State getRandomEntry()
 	{
 		return listEntry.get(r.nextInt(listEntry.size()));
+	}
+	
+	public State getRandomPortal(State entry)
+	{
+		State out;
+		do {
+			out = listTeleport.get(r.nextInt(listTeleport.size()));
+		} while(out.equals(entry));
+		return out;
 	}
 
 	public int getTailleX()

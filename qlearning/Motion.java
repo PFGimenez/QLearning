@@ -109,6 +109,11 @@ public class Motion
 			cout = SquareType.WALL.recompense;
 			nextState = etat;
 		}
+		else if(l.getType(voisin.x, voisin.y) == SquareType.TELEPORT)
+		{
+			cout = SquareType.TELEPORT.recompense;
+			nextState = l.getRandomPortal(voisin);
+		}
 		else
 			cout = l.getType(nextState.x, nextState.y).recompense;
 		

@@ -28,7 +28,8 @@ public enum SquareType {
 	EMPTY('.', -1),
 	WALL('#', -5),
 	EXIT('>', 1000),
-	TRAP('^', -10);
+	TRAP('^', -10),
+	TELEPORT('T', -5);
 	
 	/**
 	 * Le symbole associé à ce type dans un fichier texte
