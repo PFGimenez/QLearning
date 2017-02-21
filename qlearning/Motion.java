@@ -44,13 +44,13 @@ public class Motion
 	private State depart;
 	private boolean verbose;
 	
-	public Motion(Labyrinthe l, boolean backtracking, boolean verbose)
+	public Motion(Labyrinthe l, double gamma, boolean backtracking, boolean verbose)
 	{
 		this.verbose = verbose;
 		this.backtracking = backtracking;
 		tailleX = l.getTailleX();
 		tailleY = l.getTailleY();
-		matrix = new CostMatrix(tailleX, tailleY);
+		matrix = new CostMatrix(tailleX, tailleY, gamma);
 		etats = new State[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)

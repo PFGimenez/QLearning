@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 import java.io.IOException;
 
+import graphic.ThreadGUI;
 import maze.Labyrinthe;
 import qlearning.Motion;
 import qlearning.strategy.*;
@@ -31,7 +32,7 @@ import qlearning.strategy.*;
  *
  */
 
-public class ConsoleDisplay
+public class QLearning
 {
 	
 	public static void main(String[] args)
@@ -39,18 +40,20 @@ public class ConsoleDisplay
 //		Labyrinthe l = new Labyrinthe(10,10, 1, 1, 2);
 		Labyrinthe l;
 		try {
-			l = new Labyrinthe("maze1.txt");
+			l = new Labyrinthe("maze2.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		}
-		Motion m = new Motion(l, false, true);
+		Motion m = new Motion(l, 0.95, true, false);
 		System.out.println(m);
-//		Strategy strat = new EpsilonStrategy(0.90, m, new SmartFullExploration(m));
+		Strategy strat = new EpsilonStrategy(0.90, m, new SmartFullExploration(m));
 //		Strategy strat = new FullExploration(m);
 //		Strategy strat = new SmartFullExploration(m);
-		Strategy strat = new FullExploitation(m);
-		System.out.println(strat.learn(2000));
+//		Strategy strat = new FullExploitation(m);
+		ThreadGUI display = new ThreadGUI(l, m, strat);
+		display.start();
+		System.out.println(strat.learn(200000, 50));
 		System.out.println(m);
 	}
 	

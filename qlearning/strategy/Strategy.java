@@ -33,11 +33,17 @@ public abstract class Strategy
 	private Motion motion;
 	private double cumulatedReward;
 	protected int[][][] comptes;
+	private State current = null;
 	
 	public Strategy(Motion motion)
 	{
 		this.motion = motion;
 		comptes = new int[motion.getTailleX()][motion.getTailleY()][Action.values().length];
+	}
+	
+	public State getCurrent()
+	{
+		return current;
 	}
 	
 	/**
@@ -46,7 +52,7 @@ public abstract class Strategy
 	 * @param nbToursMax
 	 * @return
 	 */
-	public double learn(int nbToursMax)
+	public double learn(int nbToursMax, int sleep)
 	{
 		cumulatedReward = 0;
 		for(int i = 0; i < comptes.length; i++)
@@ -54,20 +60,31 @@ public abstract class Strategy
 				for(int k = 0; k < Action.values().length; k++)
 					comptes[i][j][k] = 0;
 		
-		State current = motion.getRandomEntry();
+		current = motion.getRandomEntry();
 		for(int i = 0; i < nbToursMax; i++)
 		{
-			Action a = chooseAction(motion, current, i);
-			comptes[current.x][current.y][a.ordinal()]++;
-			StateReward sr = motion.getNextStateReward(current, a);
-			motion.updateCost(current, a, sr.s, sr.r);
-			current = sr.s;
-			cumulatedReward += sr.r;
-			if(motion.isExited(current))
+			System.out.println(i);
+			synchronized(this)
 			{
-				System.out.println("Sortie atteinte !");
-				current = motion.getRandomEntry();
+				Action a = chooseAction(motion, current, i);
+				comptes[current.x][current.y][a.ordinal()]++;
+				StateReward sr = motion.getNextStateReward(current, a);
+				motion.updateCost(current, a, sr.s, sr.r);
+				current = sr.s;
+				cumulatedReward += sr.r;
+				if(motion.isExited(current))
+				{
+	//				System.out.println("Sortie atteinte !");
+					current = motion.getRandomEntry();
+				}
+				notify();
 			}
+			if(sleep > 0)
+				try {
+					Thread.sleep(sleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 		}
 		return cumulatedReward;
 	}

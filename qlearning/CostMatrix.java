@@ -28,10 +28,11 @@ public class CostMatrix
 {
 	private double[][][] cost;
 	private double learningRate = 1;
-	private double actualisationFactor = 0.2;
+	private double actualisationFactor;
 	
-	public CostMatrix(int tailleX, int tailleY)
+	public CostMatrix(int tailleX, int tailleY, double gamma)
 	{
+		actualisationFactor = gamma;
 		cost = new double[tailleX][tailleY][Action.values().length];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
