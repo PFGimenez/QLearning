@@ -37,8 +37,8 @@ public class QLearning
 		if(args.length == 0)
 		{
 			System.out.println("Usage:");
-			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-S strategy [param strategy]] --file maze[1|2|3].txt");
-			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-S strategy [param strategy]] --gen sizeX sizeY nbEntry nbExit nbTrap nbPortal");
+			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-G [16|32]] [-S strategy [param strategy]] --file maze[1|2|3].txt");
+			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-G [16|32]] [-S strategy [param strategy]] --gen sizeX sizeY nbEntry nbExit nbTrap nbPortal");
 			System.out.println("Strategies:");
 			System.out.println("	FullRandomExplo: random walk");
 			System.out.println("	FullSmartExplo: explore the maze (not completely at random)");
@@ -56,6 +56,7 @@ public class QLearning
 		double epsilon = 0.995;
 		boolean backtrack = true;
 		boolean arrows = true;
+		int graphic = 32;
 		String filename = "";
 		String strategy = "epsilon";
 		int sizeX = 0, sizeY = 0, nbEntry = 0, nbExit = 0, nbTrap = 0, nbPortal = 0;
@@ -75,6 +76,14 @@ public class QLearning
 				arrows = false;
 			else if(p.equals("--no-backtrack"))
 				backtrack = false;		
+			else if(p.equals("-G"))
+			{
+				int tmp = Integer.parseInt(args[++i]);
+				if(tmp != 16 && tmp != 32)
+					System.err.println("Graphics can bonly be 16 or 32.");
+				else
+					graphic = tmp;
+			}
 			else if(p.equals("--gen"))
 			{
 				sizeX = Integer.parseInt(args[++i]);
@@ -90,9 +99,11 @@ public class QLearning
 				if(strategy.equals("epsilon"))
 					epsilon = Integer.parseInt(args[++i]);
 			}
+			else
+				System.err.println("Unknown parameter : "+p);
 		}
 		
-		System.out.println("Gamma = "+gamma+", nbIter = "+nbIter+", sleep = "+sleep+", arrows = "+arrows+", backtracking = "+backtrack);
+		System.out.println("Gamma = "+gamma+", nbIter = "+nbIter+", sleep = "+sleep+", arrows = "+arrows+", backtracking = "+backtrack+", graphics = "+graphic);
 		
 		Labyrinthe l;
 		try {
@@ -102,7 +113,7 @@ public class QLearning
 				l = new Labyrinthe(sizeX, sizeY, nbEntry, nbExit, nbTrap, nbPortal);
 			else
 			{
-				System.out.println("Please use --gen or --file");
+				System.err.println("Please use --gen or --file");
 				return;
 			}
 			System.out.println("Maze: \n"+l);
@@ -137,12 +148,12 @@ public class QLearning
 		}
 		else
 		{
-			System.out.println("Unknown strategy: "+strategy);
+			System.err.println("Unknown strategy: "+strategy);
 			return;
 		}
 		
 		// Start the GUI
-		new ThreadGUI(l, m, strat, 32, arrows).start();
+		new ThreadGUI(l, m, strat, graphic, arrows).start();
 		
 		// Learn
 		double score = strat.learn(nbIter, sleep);
