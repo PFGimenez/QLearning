@@ -36,28 +36,31 @@ public class QLearning
 		
 		if(args.length == 0)
 		{
-			System.out.println("Usage :\njava QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-S strategy [param strategy]] --file maze1.txt");
-			System.out.println("java QLearning [-g gamma] [-i nbIter] [-s sleep] [-S strategy [param strategy]] --gen sizeX sizeY nbEntry nbExit nbTrap nbPortal");
-			System.out.println("Default values : gamme = 0.95, nbIter = 100000, sleep = 100, strategy = Epsilon 0.99");
-			System.out.println("Strategies :");
-			System.out.println("	FullRandomExplo : random walk");
-			System.out.println("	FullSmartExplo : explore the maze (not completely at random)");
-			System.out.println("	FullExploit : full exploitation");
-			System.out.println("	Epsilon : epsilon-strategy with FullSmartExplo and FullExploit. Mandatory parameter : epsilon (recom : 0.99)");
+			System.out.println("Usage:");
+			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-S strategy [param strategy]] --file maze[1|2|3].txt");
+			System.out.println("	java QLearning [-g gamma] [-i nbIter] [-s sleep] [--no-arrows] [--no-backtrack] [-S strategy [param strategy]] --gen sizeX sizeY nbEntry nbExit nbTrap nbPortal");
+			System.out.println("Strategies:");
+			System.out.println("	FullRandomExplo: random walk");
+			System.out.println("	FullSmartExplo: explore the maze (not completely at random)");
+			System.out.println("	FullExploit: full exploitation");
+			System.out.println("	Epsilon: epsilon-strategy with FullSmartExplo and FullExploit. Mandatory parameter : epsilon (recom : 0.99)");
 			return;
 		}
 		
+		/*
+		 * Default values
+		 */
 		double gamma = 0.95;
 		int nbIter = 100000;
 		int sleep = 100;
-		double epsilon = 0.99;
+		double epsilon = 0.995;
 		boolean backtrack = true;
 		boolean arrows = true;
 		String filename = "";
 		String strategy = "epsilon";
 		int sizeX = 0, sizeY = 0, nbEntry = 0, nbExit = 0, nbTrap = 0, nbPortal = 0;
 		
-		for(int i = 0;  i < args.length; i++)
+		for(int i = 0; i < args.length; i++)
 		{
 			String p = args[i];
 			if(p.equals("-g"))
@@ -114,22 +117,22 @@ public class QLearning
 		Strategy strat;
 		if(strategy.equals("epsilon"))
 		{
-			System.out.println("Using EpsilonStrategy with epsilon = "+epsilon);
+			System.out.println("Using Epsilon strategy with epsilon = "+epsilon);
 			strat = new EpsilonStrategy(epsilon, m, new SmartFullExploration(m), false);
 		}
 		else if(strategy.equals("fullrandomexplo"))
 		{
-			System.out.println("Using FullRandomExplo");
+			System.out.println("Using FullRandomExplo strategy");
 			strat = new FullExploration(m);
 		}
 		else if(strategy.equals("fullsmartexplo"))
 		{
-			System.out.println("Using FullSmartExplo");
+			System.out.println("Using FullSmartExplo strategy");
 			strat = new SmartFullExploration(m);
 		}
 		else if(strategy.equals("fullexploit"))
 		{
-			System.out.println("Using FullExploit");
+			System.out.println("Using FullExploit strategy");
 			strat = new FullExploitation(m);
 		}
 		else
@@ -138,9 +141,14 @@ public class QLearning
 			return;
 		}
 		
-		ThreadGUI display = new ThreadGUI(l, m, strat, 32, arrows);
-		display.start();
-		System.out.println("Cumulated score: "+strat.learn(nbIter, sleep));
+		// Start the GUI
+		new ThreadGUI(l, m, strat, 32, arrows).start();
+		
+		// Learn
+		double score = strat.learn(nbIter, sleep);
+		System.out.println("Cumulated score: "+score);
+		
+		// Print the Q matrix
 		System.out.println(m);
 	}
 	

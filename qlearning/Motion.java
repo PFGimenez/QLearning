@@ -138,7 +138,7 @@ public class Motion
 	public String toString()
 	{
 		NumberFormat formatter = new DecimalFormat("#0.00");
-		String out = "";//l.toString()+"\n";
+		String out = "Q matrix:\n";//l.toString()+"\n";
 		for(int i = tailleY-1; i >= 0; i--)
 		{
 			for(int j = 0; j < tailleX; j++)
