@@ -51,13 +51,14 @@ public class Labyrinthe {
 	 */
 	public Labyrinthe(int tailleX, int tailleY, int nbEntry, int nbExit, int nbTrap, int nbTeleport)
 	{
+		System.out.println("Generating a maze. Beware, it's pretty stupid : no path is guaranteed.");
 		this.tailleX = tailleX;
 		this.tailleY = tailleY;
 	    State.setTailles(tailleX, tailleY);
 		cases = new SquareType[tailleX][tailleY];
 		for(int i = 0; i < tailleX; i++)
 			for(int j = 0; j < tailleY; j++)
-				cases[i][j] = (r.nextDouble() > 0.30) ? SquareType.EMPTY : SquareType.WALL; // 20% de murs
+				cases[i][j] = (r.nextDouble() > 0.30) ? SquareType.EMPTY : SquareType.WALL; // 30% de murs
 		
 		addType(nbEntry, SquareType.ENTRY, listEntry);
 		addType(nbExit, SquareType.EXIT, listExit);
@@ -86,6 +87,7 @@ public class Labyrinthe {
 	 */
 	public Labyrinthe(String filename) throws IOException
 	{
+		System.out.println("Loading the maze from the file "+filename);
 		BufferedReader br;
 		br = new BufferedReader(new FileReader(filename));
 	    String line;

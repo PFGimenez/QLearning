@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package qlearning.strategy;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import qlearning.Action;
 import qlearning.Motion;
 import qlearning.State;
@@ -29,6 +33,8 @@ import qlearning.State;
 
 public class SmartFullExploration extends Strategy
 {
+	private Random r = new Random();
+	
 	public SmartFullExploration(Motion motion) 
 	{
 		super(motion);
@@ -37,7 +43,7 @@ public class SmartFullExploration extends Strategy
 	@Override
 	protected Action chooseAction(Motion motion, State current, int nbTours)
 	{
-		Action best = null;
+		List<Action> bests = new ArrayList<Action>();
 		int valueBest = 0;
 		for(Action a : Action.values())
 		{
@@ -46,13 +52,17 @@ public class SmartFullExploration extends Strategy
 			if(!new State(x,y).isPossible())
 				continue;
 			
-			if(best == null || comptes[current.x][current.y][a.ordinal()] < valueBest)
+			if(bests.isEmpty() || comptes[current.x][current.y][a.ordinal()] <= valueBest)
 			{
-				best = a;
+				if(comptes[current.x][current.y][a.ordinal()] < valueBest)
+					bests.clear();
 				valueBest = comptes[current.x][current.y][a.ordinal()];
+				bests.add(a);
+				if(valueBest == 0 && !motion.hasBeenVisited(new State(x,y)))
+					return a;
 			}
 		}
-		return best;
+		return bests.get(r.nextInt(bests.size()));
 	}
 
 }

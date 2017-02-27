@@ -41,7 +41,7 @@ public class ThreadGUI extends Thread
 	@Override
 	public void run()
 	{
-		System.out.println("Démarrage du thread d'affichage");
+//		System.out.println("Démarrage du thread d'affichage");
 		try {
 			while(true)
 			{

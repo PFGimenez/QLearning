@@ -68,7 +68,7 @@ public abstract class Strategy
 			if(System.currentTimeMillis() - lastAff > 5000)
 			{
 				lastAff = System.currentTimeMillis();
-				System.out.println(i+" itérations");
+				System.out.println(i+" iterations");
 			}
 			synchronized(this)
 			{
