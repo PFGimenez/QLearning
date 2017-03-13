@@ -97,7 +97,7 @@ public class QLearning
 			{
 				strategy = args[++i].toLowerCase();
 				if(strategy.equals("epsilon"))
-					epsilon = Integer.parseInt(args[++i]);
+					epsilon = Double.parseDouble(args[++i]);
 			}
 			else
 				System.err.println("Unknown parameter : "+p);
