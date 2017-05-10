@@ -2,6 +2,8 @@
 
 ## Building
 
+[![Build Status](https://travis-ci.org/PFGimenez/QLearning.svg?branch=master)](https://travis-ci.org/PFGimenez/QLearning)
+
 You will need `ant` and `java`.
 
 ```
