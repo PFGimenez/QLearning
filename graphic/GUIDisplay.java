@@ -1,7 +1,9 @@
 package graphic;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -74,12 +76,19 @@ public class GUIDisplay extends JPanel {
 					g.drawImage(spriteTeleport, i*taille, (tailleY-j-1)*taille, Color.WHITE, null);
 				Action a = m.getBestAction(new State(i,j));
 				if(m.hasBeenVisited(new State(i,j)) && drawArrow)
+				{
+					float val = 1f / (1f + (float) (Math.exp(-m.getCost(new State(i,j), a)/10)));
+					AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, val);
+					((Graphics2D)g).setComposite(ac);
 					g.drawImage(spritesArrow[a.ordinal()], i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
+					ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+					((Graphics2D)g).setComposite(ac);
+				}
 				if(current != null && current.x == i && current.y == j)
 					g.drawImage(spritePerso, i*taille, (tailleY-j-1)*taille, new Color(0,0,0,0), null);
 			}
 	}
-
+	
 	public GUIDisplay(Labyrinthe l, Motion m, int taille, boolean drawArrow)
 	{
 		this.drawArrow = drawArrow;

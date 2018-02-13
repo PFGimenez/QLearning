@@ -203,4 +203,9 @@ public class Motion
 		return l.getTailleY();
 	}
 
+	public double getCost(State state, Action a)
+	{
+		return matrix.getCost(state, a);
+	}
+
 }
